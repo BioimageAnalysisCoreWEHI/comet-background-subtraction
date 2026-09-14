@@ -134,3 +134,12 @@ outdir/
 - `backsub` has no conda/bioconda package; the `conda` profile pip-installs the packaged **v0.5.2**
   release (identical CLI and subtraction formula to the `ghcr.io/schapirolabor/background_subtraction:v0.4.1`
   container used elsewhere).
+
+## Acknowledgements
+
+The actual pixel-by-pixel subtraction is performed by the
+[`backsub`](https://github.com/SchapiroLabor/Background_subtraction) tool; this pipeline only adds
+COMET-specific marker/background auto-detection and SLURM/Nextflow parallelisation around it.
+
+> Bestak, K., Perez, V., & Wuennemann, F. (2025). Backsub: a pixel-by-pixel channel subtraction
+> tool for multiplexed immunofluorescence data. <https://github.com/SchapiroLabor/Background_subtraction>
