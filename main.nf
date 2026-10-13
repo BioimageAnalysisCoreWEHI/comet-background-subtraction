@@ -25,6 +25,7 @@ process EXTRACT_MARKERS {
     label 'process_low'
 
     conda "${projectDir}/bin/environment.yml"
+    container "ghcr.io/schapirolabor/background_subtraction:v0.5.2"
 
     publishDir "${params.outdir}/markers", mode: params.publish_dir_mode, pattern: "*_markers.csv"
 
@@ -63,6 +64,7 @@ process BACKSUB {
     label 'process_backsub'
 
     conda "${projectDir}/bin/environment.yml"
+    container "ghcr.io/schapirolabor/background_subtraction:v0.5.2"
 
     publishDir "${params.outdir}",         mode: params.publish_dir_mode, pattern: "*.ome.tif"
     publishDir "${params.outdir}/markers", mode: params.publish_dir_mode, pattern: "*_markers_out.csv"

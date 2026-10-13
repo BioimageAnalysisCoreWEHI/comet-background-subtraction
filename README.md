@@ -36,7 +36,12 @@ The pipeline uses this to pair each marker with the correct band-matched blank. 
 ## Requirements
 
 - [Nextflow](https://www.nextflow.io/) ≥ 24.04.2
-- conda or mamba (the `conda` profile builds an environment that includes `backsub` v0.5.2)
+- Apptainer or Singularity (recommended). Both processes run in
+  `ghcr.io/schapirolabor/background_subtraction:v0.5.2`, which contains `backsub` v0.5.2, pandas and
+  tifffile. On the WEHI cluster, `module load nextflow` also loads Apptainer.
+- Or conda/mamba (`conda` profile builds `bin/environment.yml`). This needs a working conda on the
+  SLURM compute nodes; without it the jobs run the system Python and fail with
+  `ModuleNotFoundError: No module named 'pandas'`.
 
 ## Inputs
 
@@ -63,7 +68,7 @@ slideB,/vast/.../slideB_raw.ome.tiff,CSL_panCK;CSL_FAP
 nextflow run main.nf \
     --input samplesheet.csv \
     --outdir /vast/scratch/users/$USER/comet_backsub \
-    -profile conda,large
+    -profile apptainer,large
 ```
 
 or, over a directory:
@@ -72,7 +77,7 @@ or, over a directory:
 nextflow run main.nf \
     --input_dir /path/to/raw_comet_images \
     --outdir /path/to/output \
-    -profile conda,medium
+    -profile apptainer,medium
 ```
 
 ## Parameters
@@ -104,7 +109,7 @@ profile:
 | `large`  | 960 GB                   | lrg             | Full-size COMET exports (100s of GB) |
 
 ```bash
--profile conda,large
+-profile apptainer,large
 ```
 
 Memory scales with `task.attempt`, so a job that hits an OOM retries once at double the memory.
@@ -131,6 +136,8 @@ outdir/
   python bin/comet_markers.py /path/to/raw_comet.ome.tiff        # prints CSV to stdout
   python bin/comet_markers.py /path/to/raw_comet.ome.tiff --keep-background
   ```
+- The `singularity`/`apptainer` profiles use the upstream `ghcr.io/schapirolabor/background_subtraction:v0.5.2`
+  image for both processes. Images are looked up in `/vast/projects/soda_cache/containers` first.
 - `backsub` has no conda/bioconda package; the `conda` profile pip-installs the packaged **v0.5.2**
   release (identical CLI and subtraction formula to the `ghcr.io/schapirolabor/background_subtraction:v0.4.1`
   container used elsewhere).

@@ -47,6 +47,17 @@ nextflow run main.nf \
 - Base process defaults are local-friendly (cpus=2); real CPU/mem come from `-profile small|medium|large`.
 - `run.sh` also sets `NXF_APPTAINER_HOME_MOUNT=true` and `NXF_APPTAINER_LIBRARYDIR=/vast/projects/soda_cache/containers`.
 
+### Container runtime (2026-10-14)
+A colleague's Seqera run with `-profile medium,conda` failed in EXTRACT_MARKERS with
+`ModuleNotFoundError: No module named 'pandas'`, because the user had no working conda setup on the
+compute nodes. Nextflow activates the conda env in `.command.run` *outside* the `.command.err`
+capture, so the activation failure is not shown and the job runs the system Python. Fix: both
+processes now also declare `container "ghcr.io/schapirolabor/background_subtraction:v0.5.2"`
+(upstream image: micromamba base + backsub's environment.yml + `pip install .`; it has pandas,
+tifffile, `backsub` on PATH, and procps). Use `-profile apptainer,<size>`. The container profiles set
+`libraryDir = /vast/projects/soda_cache/containers` (shared WEHI cache) and `pullTimeout = 1h`.
+The conda profile is kept but no longer recommended.
+
 ### Locked decisions (confirmed with user 2026-07-22)
 - **Input model: BOTH** — a samplesheet CSV (primary) *and* a directory-glob fallback.
 - **backsub version: v0.5.2 via pip** into the conda env (packaged; identical CLI/formula to v0.4.1).
